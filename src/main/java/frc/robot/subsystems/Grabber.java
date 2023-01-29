@@ -17,6 +17,7 @@ public class Grabber extends SubsystemBase {
         });
   }
 
+
   public CANSparkMax leftIntake = new CANSparkMax(26, MotorType.kBrushless);
   private RelativeEncoder leftIntakeEncoder = leftIntake.getEncoder();
   public boolean exampleCondition() {
@@ -31,10 +32,15 @@ public class Grabber extends SubsystemBase {
     leftIntake.set(0.0);
   }
 
+  public void setPosition(int Position){
+    leftIntakeEncoder.setPosition(Position);
+  }
+
   @Override
   public void periodic() {
     // SmartDashboard.putNumber("Grabber Velocity", leftIntakeEncoder.getVelocity());
     // SmartDashboard.putNumber("Grabber Current", leftIntake.getOutputCurrent());
+    SmartDashboard.putNumber("Motor Encoder Value", leftIntakeEncoder.getPosition());
   }
 
   @Override
