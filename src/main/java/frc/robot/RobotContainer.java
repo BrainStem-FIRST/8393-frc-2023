@@ -27,8 +27,8 @@ public class RobotContainer {
     private final JoystickButton testEncoderMotor2 = new JoystickButton(driver, XboxController.Button.kB.value);
 
     /* Subsystems */
-    private final Swerve s_Swerve = new Swerve();
-    private final Grabber grabber = new Grabber();
+    private final Drivetrain s_Swerve = new Drivetrain();
+    private final Collector grabber = new Collector();
 
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */

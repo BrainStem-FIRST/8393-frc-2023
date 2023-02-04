@@ -1,203 +1,247 @@
 package frc.robot.subsystems;
 
+import frc.robot.SwerveModule;
+import frc.lib.util.COTSFalconSwerveConstants;
+import frc.lib.util.SwerveModuleConstants;
+import frc.robot.Constants;
+
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
+
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.sensors.Pigeon2;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-// import frc.robot.utilities.SwerveModule;
-// import frc.robot.utilities.SwerveModuleConstants;
 
 public class Drivetrain extends SubsystemBase {
-    // public static final class DrivetrainConstants {
-    //     /* Drivetrain Constants */
-    //     public static final double trackWidth = Units.inchesToMeters(21.73); // FIXME
-    //     public static final double wheelBase = Units.inchesToMeters(21.73); // FIXME
-    //     public static final double wheelDiameter = Units.inchesToMeters(3.94);
-    //     public static final double wheelCircumference = wheelDiameter * Math.PI;
+    public static final class DrivetrainConstants {
+        public static final int pigeonID = 13;
+        public static final boolean invertGyro = false; // Always ensure Gyro is CCW+ CW-
 
-    //     public static final double openLoopRamp = 0.25;
-    //     public static final double closedLoopRamp = 0.0;
+        public static final COTSFalconSwerveConstants chosenModule =  //TODO: This must be tuned to specific robot
+            COTSFalconSwerveConstants.SDSMK4i(COTSFalconSwerveConstants.driveGearRatios.SDSMK4i_L3);
 
-    //     public static final double driveGearRatio = 6.12; // CORRECT!
-    //     public static final double angleGearRatio = 150 / 7; // CORRECT!
+        /* Drivetrain Constants */
+        public static final double trackWidth = Units.inchesToMeters(21.73); //TODO: This must be tuned to specific robot
+        public static final double wheelBase = Units.inchesToMeters(21.73); //TODO: This must be tuned to specific robot
+        public static final double wheelCircumference = chosenModule.wheelCircumference;
 
-    //     public static final SwerveModuleConstants frontLeftModuleConstants = new SwerveModuleConstants("Front Left",
-    //             1, 2, true, true, 1,
-    //             37.5, false); // FIXME
+        /* Swerve Kinematics 
+         * No need to ever change this unless you are not doing a traditional rectangular/square 4 module swerve */
+         public static final SwerveDriveKinematics swerveKinematics = new SwerveDriveKinematics(
+            new Translation2d(wheelBase / 2.0, trackWidth / 2.0),
+            new Translation2d(wheelBase / 2.0, -trackWidth / 2.0),
+            new Translation2d(-wheelBase / 2.0, trackWidth / 2.0),
+            new Translation2d(-wheelBase / 2.0, -trackWidth / 2.0));
 
-    //     public static final SwerveModuleConstants frontRightModuleConstants = new SwerveModuleConstants("Front Right",
-    //             3, 4, true, true, 2,
-    //             10.45, false); // FIXME
+        /* Module Gear Ratios */
+        public static final double driveGearRatio = chosenModule.driveGearRatio;
+        public static final double angleGearRatio = chosenModule.angleGearRatio;
 
-    //     public static final SwerveModuleConstants backLeftModuleConstants = new SwerveModuleConstants("Back Left",
-    //             5, 6, true, true, 3,
-    //             38.75, false); // FIXME
+        /* Motor Inverts */
+        public static final boolean angleMotorInvert = chosenModule.angleMotorInvert;
+        public static final boolean driveMotorInvert = chosenModule.driveMotorInvert;
 
-    //     public static final SwerveModuleConstants backRightModuleConstants = new SwerveModuleConstants("Back Right",
-    //             7, 8, true, true, 4,
-    //             58.88, false); // FIXME
+        /* Angle Encoder Invert */
+        public static final boolean canCoderInvert = chosenModule.canCoderInvert;
 
-    //     public static final Translation2d frontLeftPosition = new Translation2d(wheelBase / 2.0, trackWidth / 2.0);
-    //     public static final Translation2d frontRightPosition = new Translation2d(wheelBase / 2.0, -trackWidth / 2.0);
-    //     public static final Translation2d backLeftPosition = new Translation2d(-wheelBase / 2.0, trackWidth / 2.0);
-    //     public static final Translation2d backRightPosition = new Translation2d(-wheelBase / 2.0, -trackWidth / 2.0);
+        public static final double drivetrainLimit = 1;
 
-    //     public static final int gyroID = 1;
-    //     public static final boolean gyroReversed = false; // Always ensure Gyro is CCW+ CW-
+        /* Swerve Current Limiting */
+        public static final int angleContinuousCurrentLimit = 25;
+        public static final int anglePeakCurrentLimit = 40;
+        public static final double anglePeakCurrentDuration = 0.1;
+        public static final boolean angleEnableCurrentLimit = true;
 
-    //     public static final SwerveDriveKinematics swerveKinematics = new SwerveDriveKinematics(
-    //             frontLeftPosition, frontRightPosition, backLeftPosition, backRightPosition);
+        public static final int driveContinuousCurrentLimit = 35;
+        public static final int drivePeakCurrentLimit = 60;
+        public static final double drivePeakCurrentDuration = 0.1;
+        public static final boolean driveEnableCurrentLimit = true;
 
-    //     /* Swerve Current Limiting */
-    //     public static final int angleContinuousCurrentLimit = 25;
-    //     public static final int anglePeakCurrentLimit = 40;
-    //     public static final double anglePeakCurrentDuration = 0.1;
-    //     public static final boolean angleEnableCurrentLimit = true;
+        /* These values are used by the drive falcon to ramp in open loop and closed loop driving.
+         * We found a small open loop ramp (0.25) helps with tread wear, tipping, etc */
+        public static final double openLoopRamp = 0.25;
+        public static final double closedLoopRamp = 0.0;
 
-    //     public static final int driveContinuousCurrentLimit = 35;
-    //     public static final int drivePeakCurrentLimit = 60;
-    //     public static final double drivePeakCurrentDuration = 0.1;
-    //     public static final boolean driveEnableCurrentLimit = true;
+        /* Angle Motor PID Values */
+        public static final double angleKP = chosenModule.angleKP;
+        public static final double angleKI = chosenModule.angleKI;
+        public static final double angleKD = chosenModule.angleKD;
+        public static final double angleKF = chosenModule.angleKF;
 
-    //     /* Angle Motor PID Values */
-    //     public static final double steerProportional = 0.6;
-    //     public static final double steerIntegral = 0.0;
-    //     public static final double steerDerivative = 12.0;
-    //     public static final double steerFeedForward = 0.0;
+        /* Drive Motor PID Values */
+        public static final double driveKP = 0.05; //TODO: This must be tuned to specific robot
+        public static final double driveKI = 0.0;
+        public static final double driveKD = 0.0;
+        public static final double driveKF = 0.0;
 
-    //     /* Drive Motor PID Values */
-    //     public static final double driveProportional = 0.10;
-    //     public static final double driveIntegral = 0.0;
-    //     public static final double driveDerivative = 0.0;
-    //     public static final double driveFeedForward = 0.0;
+        /* Drive Motor Characterization Values 
+         * Divide SYSID values by 12 to convert from volts to percent output for CTRE */
+        public static final double driveKS = (0.32 / 12); //TODO: This must be tuned to specific robot
+        public static final double driveKV = (1.51 / 12);
+        public static final double driveKA = (0.27 / 12);
 
-    //     /* Drive Motor Characterization Values */
-    //     public static final double driveKS = (0.667 / 12); // divide by 12 to convert from volts to percent output for
-    //                                                        // CTRE
-    //     public static final double driveKV = (2.44 / 12);
-    //     public static final double driveKA = (0.27 / 12);
+        /* Swerve Profiling Values */
+        /** Meters per Second */
+        public static final double maxSpeed = 4.5; //TODO: This must be tuned to specific robot
+        /** Radians per Second */
+        public static final double maxAngularVelocity = 10.0; //TODO: This must be tuned to specific robot
 
-    //     /* Swerve Profiling Values */
-    //     public static final double maxSpeed = 4.5; // meters per second
-    //     public static final double maxAngularVelocity = 11.5;
+        /* Neutral Modes */
+        public static final NeutralMode angleNeutralMode = NeutralMode.Coast;
+        public static final NeutralMode driveNeutralMode = NeutralMode.Brake;
 
-    //     /* Neutral Modes */
-    //     public static final NeutralMode angleNeutralMode = NeutralMode.Coast;
-    //     public static final NeutralMode driveNeutralMode = NeutralMode.Brake;
+        /* Module Specific Constants */
+        /* Front Left Module - Module 0 */
+        public static final class Mod0 { //TODO: This must be tuned to specific robot
+            public static final int driveMotorID = 1;
+            public static final int angleMotorID = 5;
+            public static final int canCoderID = 9;
+            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(47.8);
+            public static final SwerveModuleConstants constants = 
+                new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset);
+        }
 
-    // }
+        /* Front Right Module - Module 1 */
+        public static final class Mod1 { //TODO: This must be tuned to specific robot
+            public static final int driveMotorID = 7;
+            public static final int angleMotorID = 4;
+            public static final int canCoderID = 10;
+            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(164.65);
+            public static final SwerveModuleConstants constants = 
+                new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset);
+        }
+        
+        /* Back Left Module - Module 2 */
+        public static final class Mod2 { //TODO: This must be tuned to specific robot
+            public static final int driveMotorID = 6;
+            public static final int angleMotorID = 3;
+            public static final int canCoderID = 11;
+            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(170.6);
+            public static final SwerveModuleConstants constants = 
+                new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset);
+        }
 
-    // SwerveDriveKinematics driveKinematics;
-    // SwerveModuleState[] swerveModuleStates;
+        /* Back Right Module - Module 3 */
+        public static final class Mod3 { //TODO: This must be tuned to specific robot
+            public static final int driveMotorID = 2;
+            public static final int angleMotorID = 8;
+            public static final int canCoderID = 12;
+            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(334.6);
+            public static final SwerveModuleConstants constants = 
+                new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset);
+        }
+    }
+    public SwerveDriveOdometry swerveOdometry;
+    public SwerveModule[] mSwerveMods;
+    public Pigeon2 gyro;
 
-    // // swerve modules
-    // SwerveModule frontLeftModule;
-    // SwerveModule frontRightModule;
-    // SwerveModule backLeftModule;
-    // SwerveModule backRightModule;
+    public Drivetrain() {
+        gyro = new Pigeon2(DrivetrainConstants.pigeonID, "CANivore_dt");
+        gyro.configFactoryDefault();
+        zeroGyro();
 
-    // SwerveModule[] swerveModules;
+        mSwerveMods = new SwerveModule[] {
+            new SwerveModule(0, DrivetrainConstants.Mod0.constants),
+            new SwerveModule(1, DrivetrainConstants.Mod1.constants),
+            new SwerveModule(2, DrivetrainConstants.Mod2.constants),
+            new SwerveModule(3, DrivetrainConstants.Mod3.constants)
+        };
 
-    // SwerveDriveOdometry swerveOdometry;
+        /* By pausing init for a second before setting module offsets, we avoid a bug with inverting motors.
+         * See https://github.com/Team364/BaseFalconSwerve/issues/8 for more info.
+         */
+        Timer.delay(1.0);
+        resetModulesToAbsolute();
 
-    // Pigeon2 gyro;
+        swerveOdometry = new SwerveDriveOdometry(DrivetrainConstants.swerveKinematics, getYaw(), getModulePositions());
+    }
 
-    // public Drivetrain() {
+    public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
+        SwerveModuleState[] swerveModuleStates =
+            DrivetrainConstants.swerveKinematics.toSwerveModuleStates(
+                fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(
+                                    translation.getX(), 
+                                    translation.getY(), 
+                                    rotation, 
+                                    getYaw()
+                                )
+                                : new ChassisSpeeds(
+                                    translation.getX(), 
+                                    translation.getY(), 
+                                    rotation)
+                                );
+        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, DrivetrainConstants.maxSpeed);
 
-    //     frontLeftModule = new SwerveModule(DrivetrainConstants.frontLeftModuleConstants);
-    //     frontRightModule = new SwerveModule(DrivetrainConstants.frontRightModuleConstants);
-    //     backLeftModule = new SwerveModule(DrivetrainConstants.backLeftModuleConstants);
-    //     backRightModule = new SwerveModule(DrivetrainConstants.backRightModuleConstants);
+        for(SwerveModule mod : mSwerveMods){
+            mod.setDesiredState(swerveModuleStates[mod.moduleNumber], isOpenLoop);
+        }
+    }    
 
-    //     swerveModules = new SwerveModule[] { frontLeftModule, frontRightModule, backLeftModule, backRightModule };
-    //     gyro = new Pigeon2(DrivetrainConstants.gyroID);
-    //     gyro.configFactoryDefault();
+    /* Used by SwerveControllerCommand in Auto */
+    public void setModuleStates(SwerveModuleState[] desiredStates) {
+        SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, DrivetrainConstants.maxSpeed);
+        
+        for(SwerveModule mod : mSwerveMods){
+            mod.setDesiredState(desiredStates[mod.moduleNumber], false);
+        }
+    }    
 
-    // }
+    public Pose2d getPose() {
+        return swerveOdometry.getPoseMeters();
+    }
 
-    // public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
-    //     SwerveModuleState[] swerveModuleStates = DrivetrainConstants.swerveKinematics.toSwerveModuleStates(
-    //             fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(
-    //                     translation.getX(),
-    //                     translation.getY(),
-    //                     rotation,
-    //                     getYaw())
-    //                     : new ChassisSpeeds(
-    //                             translation.getX(),
-    //                             translation.getY(),
-    //                             rotation));
-    //     SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, DrivetrainConstants.maxSpeed);
+    public void resetOdometry(Pose2d pose) {
+        swerveOdometry.resetPosition(getYaw(), getModulePositions(), pose);
+    }
 
-    //     for (SwerveModule module : swerveModules) {
-    //         module.setDesiredState(swerveModuleStates[module.moduleNumber], isOpenLoop);
-    //     }
-    // }
+    public SwerveModuleState[] getModuleStates(){
+        SwerveModuleState[] states = new SwerveModuleState[4];
+        for(SwerveModule mod : mSwerveMods){
+            states[mod.moduleNumber] = mod.getState();
+        }
+        return states;
+    }
 
-    // /* Used by SwerveControllerCommand in Auto */
-    // public void setModuleStates(SwerveModuleState[] desiredStates) {
-    //     SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, DrivetrainConstants.maxSpeed);
+    public SwerveModulePosition[] getModulePositions(){
+        SwerveModulePosition[] positions = new SwerveModulePosition[4];
+        for(SwerveModule mod : mSwerveMods){
+            positions[mod.moduleNumber] = mod.getPosition();
+        }
+        return positions;
+    }
 
-    //     for (SwerveModule module : swerveModules) {
-    //         module.setDesiredState(desiredStates[module.moduleNumber], false);
-    //     }
-    // }
+    public void zeroGyro(){
+        gyro.setYaw(0);
+    }
 
-    // public Pose2d getPose() {
-    //     return swerveOdometry.getPoseMeters();
-    // }
+    public Rotation2d getYaw() {
+        return (DrivetrainConstants.invertGyro) ? Rotation2d.fromDegrees(360 - gyro.getYaw()) : Rotation2d.fromDegrees(gyro.getYaw());
+    }
 
-    // public void resetOdometry(Pose2d pose) {
-    //     // swerveOdometry.resetPosition(getYaw(), pose);
-    // }
+    public void resetModulesToAbsolute(){
+        for(SwerveModule mod : mSwerveMods){
+            mod.resetToAbsolute();
+        }
+    }
 
-    // public SwerveModuleState[] getStates() {
-    //     SwerveModuleState[] states = new SwerveModuleState[4];
-    //     for (SwerveModule module : swerveModules) {
-    //         states[module.moduleNumber] = module.getState();
-    //     }
-    //     return states;
-    // }
+    @Override
+    public void periodic(){
+        swerveOdometry.update(getYaw(), getModulePositions());  
 
-    // public void zeroGyro() {
-    //     gyro.setYaw(0);
-    // }
-
-    // public Rotation2d getYaw() {
-    //     double[] ypr = new double[3];
-    //     gyro.getYawPitchRoll(ypr);
-    //     return (DrivetrainConstants.gyroReversed) ? Rotation2d.fromDegrees(360 - ypr[0])
-    //             : Rotation2d.fromDegrees(ypr[0]);
-    // }
-
-    // @Override
-    // public void periodic() {
-    //     swerveOdometry.update(getYaw(), new SwerveModulePosition[] { frontLeftModule.getPosition(),
-    //             frontRightModule.getPosition(), backLeftModule.getPosition(), backRightModule.getPosition() });
-
-    //     for (SwerveModule module : swerveModules) {
-    //         SmartDashboard.putNumber("Module " + module.moduleName + " Cancoder", module.getCanCoder().getDegrees());
-    //         SmartDashboard.putNumber("Module " + module.moduleName + " Integrated",
-    //                 module.getState().angle.getDegrees());
-    //         SmartDashboard.putNumber("Module " + module.moduleName + " Velocity",
-    //                 module.getState().speedMetersPerSecond);
-    //         SmartDashboard.putNumber("Module " + module.moduleName + " Position",
-    //                 module.getPosition().distanceMeters);
-
-    //     }
-    // }
-
-    // @Override
-    // public void simulationPeriodic() {
-
-    // }
+        for(SwerveModule mod : mSwerveMods){
+            SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Cancoder", mod.getCanCoder().getDegrees());
+            SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Integrated", mod.getPosition().angle.getDegrees());
+            SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Velocity", mod.getState().speedMetersPerSecond);    
+        }
+    }
 }
