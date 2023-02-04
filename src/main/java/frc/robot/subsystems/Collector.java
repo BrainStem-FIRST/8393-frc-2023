@@ -37,13 +37,29 @@ public class Collector extends SubsystemBase {
     wheelMotor.stopMotor();
   }
 
-  public void runCollector() {
-    
+  private void openCollector() {
+
+  }
+
+  private void closeCollector() {
+
+  }
+
+  public void runCollector(boolean collectorOn, boolean closed) {
+    if(collectorOn) {
+      collectorOn();
+    } else {
+      collectorOff();
+    }
+    if(closed) {
+      closeCollector();
+    } else {
+      openCollector();
+    }
   }
 
   @Override
   public void periodic() {
-    runCollector();
   }
 
   @Override

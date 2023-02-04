@@ -21,5 +21,6 @@ public class DefaultCollectorCommand extends CommandBase {
     }
     @Override
     public void execute() {
+        collector.runCollector(collectorOn.getAsBoolean(), closeCollector.getAsBoolean());
     }
 }
