@@ -19,6 +19,7 @@ public class DepositCommand extends CommandBase {
         this.collector = collector;
         this.extension = extension;
         this.lift = lift;
+        addRequirements(collector, extension, lift);
     }
 
     @Override

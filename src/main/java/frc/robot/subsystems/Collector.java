@@ -12,6 +12,7 @@ public class Collector extends SubsystemBase {
     private static final int wheelMotorID = 71; //FIXME
     private static final double wheelMotorSpeed = 1; //FIXME
   }
+  
   CANSparkMax clawMotor;
   CANSparkMax wheelMotor;
   RelativeEncoder clawMotorEncoder;
