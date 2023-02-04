@@ -2,14 +2,16 @@ package frc.robot.commands;
 
 import frc.robot.subsystems.Lift;
 import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
+
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class DefaultLiftCommand extends CommandBase {   
 
     private Lift lift;    
-    private DoubleSupplier liftDistance;
+    private Supplier<Integer> liftDistance;
 
-    public DefaultLiftCommand(Lift lift, DoubleSupplier liftDistance) {
+    public DefaultLiftCommand(Lift lift, Supplier<Integer> liftDistance) {
 
         this.lift = lift;
         this.liftDistance = liftDistance;
@@ -18,5 +20,6 @@ public class DefaultLiftCommand extends CommandBase {
     }
     @Override
     public void execute() {
+        lift.runToPosition(liftDistance.get());
     }
 }

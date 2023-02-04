@@ -43,7 +43,7 @@ public class Lift extends SubsystemBase implements BrainSTEMSubsystem{
 
   }
 
-  public void runLiftMotorToPosition(int position) {
+  public void runToPosition(int position) {
     liftMotorLeft.set(ControlMode.Position, position);
     liftMotorRight.follow(liftMotorLeft);
   }
