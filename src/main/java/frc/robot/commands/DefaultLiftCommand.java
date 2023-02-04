@@ -1,22 +1,19 @@
 package frc.robot.commands;
 
-import frc.robot.subsystems.Collector;
-import java.util.function.BooleanSupplier;
+import frc.robot.subsystems.Lift;
+import java.util.function.DoubleSupplier;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
+public class DefaultLiftCommand extends CommandBase {   
 
-public class DefaultCollectorCommand extends CommandBase {   
+    private Lift lift;    
+    private DoubleSupplier liftDistance;
 
-    private Collector collector;    
-    private BooleanSupplier collectorOn;
-    private BooleanSupplier closeCollector;
+    public DefaultLiftCommand(Lift lift, DoubleSupplier liftDistance) {
 
-    public DefaultCollectorCommand(Collector collector, BooleanSupplier collectorOn, BooleanSupplier closeCollector) {
-
-        this.collector = collector;
-        this.collectorOn = collectorOn;
-        this.closeCollector = closeCollector;
-        addRequirements(collector);
+        this.lift = lift;
+        this.liftDistance = liftDistance;
+        addRequirements(lift);
 
     }
     @Override
