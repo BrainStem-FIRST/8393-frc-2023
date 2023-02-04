@@ -51,8 +51,8 @@ public class RobotContainer {
     private void configureButtonBindings() {
         /* Driver Buttons */
         zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
-        testEncoderMotor.onTrue(new InstantCommand(() -> grabber.collectorOn()));
-        testEncoderMotor2.onTrue(new InstantCommand(() -> grabber.collectorOff()));
+        // testEncoderMotor.onTrue(new InstantCommand(() -> grabber.collectorOn()));
+        // testEncoderMotor2.onTrue(new InstantCommand(() -> grabber.collectorOff()));
     }
 
     /**
