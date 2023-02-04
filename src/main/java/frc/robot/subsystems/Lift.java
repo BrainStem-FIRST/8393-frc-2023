@@ -1,15 +1,22 @@
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
 public class Lift extends SubsystemBase {
+
+  private static final class LiftConstants {
+    private static final int liftMotorLeftID = 96; //FIXME
+    private static final int liftMotorRightID = 100; //FIXME
+  }
+
+  TalonFX liftMotorLeft;
+  TalonFX liftMotorRight;
+
   public Lift() {
-    
+    liftMotorLeft = new TalonFX(LiftConstants.liftMotorLeftID);
+    liftMotorLeft = new TalonFX(LiftConstants.liftMotorRightID);
   }
 
   public CommandBase exampleMethodCommand() {
@@ -19,30 +26,10 @@ public class Lift extends SubsystemBase {
         });
   }
 
-
-  public CANSparkMax leftIntake = new CANSparkMax(26, MotorType.kBrushless);
-  private RelativeEncoder leftIntakeEncoder = leftIntake.getEncoder();
-  public boolean exampleCondition() {
-    return false;
-  }
-
-  public void collectorOn() {
-    leftIntake.set(0.1);
-  }
-
-  public void collectorOff() {
-    leftIntake.set(0.0);
-  }
-
-  public void setPosition(int Position){
-    leftIntakeEncoder.setPosition(Position);
-  }
+ 
 
   @Override
   public void periodic() {
-    // SmartDashboard.putNumber("Grabber Velocity", leftIntakeEncoder.getVelocity());
-    // SmartDashboard.putNumber("Grabber Current", leftIntake.getOutputCurrent());
-    SmartDashboard.putNumber("Motor Encoder Value", leftIntakeEncoder.getPosition());
   }
 
   @Override
