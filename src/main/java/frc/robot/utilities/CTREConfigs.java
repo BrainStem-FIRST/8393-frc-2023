@@ -1,4 +1,4 @@
-package frc.robot;
+package frc.robot.utilities;
 
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;

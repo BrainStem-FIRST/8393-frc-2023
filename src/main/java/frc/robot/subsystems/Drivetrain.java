@@ -1,6 +1,5 @@
 package frc.robot.subsystems;
 
-import frc.robot.SwerveModule;
 import frc.lib.util.COTSFalconSwerveConstants;
 import frc.lib.util.SwerveModuleConstants;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
