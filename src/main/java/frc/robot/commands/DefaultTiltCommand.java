@@ -1,21 +1,16 @@
 package frc.robot.commands;
 
-import frc.robot.subsystems.Collector;
 import frc.robot.subsystems.Tilt;
+import java.util.function.Supplier;
 
-import java.util.function.BooleanSupplier;
-import java.util.function.DoubleSupplier;
-
-import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-
 
 public class DefaultTiltCommand extends CommandBase {   
 
     private Tilt tilt;    
-    private DoubleSupplier tiltDistance;
+    private Supplier<Integer> tiltDistance;
 
-    public DefaultTiltCommand(Tilt tilt, DoubleSupplier tiltDistance) {
+    public DefaultTiltCommand(Tilt tilt, Supplier<Integer> tiltDistance) {
 
         this.tilt = tilt;
         this.tiltDistance = tiltDistance;
