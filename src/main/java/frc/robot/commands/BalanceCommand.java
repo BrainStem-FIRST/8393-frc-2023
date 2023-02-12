@@ -20,10 +20,11 @@ public class BalanceCommand extends CommandBase {
         BalanceCommandConstants.balanceIntegral, BalanceCommandConstants.balanceDerivative);
         this.extension = extension;
         addRequirements(extension);
-
+        
     }
     @Override
     public void execute() {
         
     }
+
 }
