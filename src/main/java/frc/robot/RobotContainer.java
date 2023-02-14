@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.autos.*;
 import frc.robot.commands.*;
 import frc.robot.subsystems.*;
+import frc.robot.subsystems.Lift.Position;
 
 
 public class RobotContainer {
@@ -21,14 +22,18 @@ public class RobotContainer {
     private final int rotationAxis = XboxController.Axis.kRightX.value;
 
     /* Driver Buttons */
-    private final JoystickButton zeroGyro = new JoystickButton(driver, XboxController.Button.kY.value);
+    private final JoystickButton liftUp = new JoystickButton(driver, XboxController.Button.kB.value);
+    private final JoystickButton liftDown = new JoystickButton(driver, XboxController.Button.kY.value);
+    private final JoystickButton liftStop = new JoystickButton(driver, XboxController.Button.kX.value);
+    private final JoystickButton zeroGyro = new JoystickButton(driver, XboxController.Button.kStart.value);
     private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
-    private final JoystickButton testEncoderMotor = new JoystickButton(driver, XboxController.Button.kX.value);
-    private final JoystickButton testEncoderMotor2 = new JoystickButton(driver, XboxController.Button.kB.value);
+    private final JoystickButton testEncoderMotor = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
+    private final JoystickButton testEncoderMotor2 = new JoystickButton(driver, XboxController.Button.kRightBumper.value);
 
     /* Subsystems */
     private final Swerve s_Swerve = new Swerve();
     private final Grabber grabber = new Grabber();
+    private final Lift lift = new Lift();
 
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -44,12 +49,17 @@ public class RobotContainer {
         );
 
 
+        lift.initialize();
+
         // Configure the button bindings
         configureButtonBindings();
     }
 
     private void configureButtonBindings() {
         /* Driver Buttons */
+        liftUp.onTrue(new InstantCommand(() -> lift.state = Position.UP));
+        liftDown.onTrue(new InstantCommand(() -> lift.state = Position.DOWN));
+        liftStop.onTrue(new InstantCommand(() -> lift.state = Position.STOP));
         zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
         testEncoderMotor.onTrue(new InstantCommand(() -> grabber.collectorOn()));
         testEncoderMotor2.onTrue(new InstantCommand(() -> grabber.collectorOff()));
