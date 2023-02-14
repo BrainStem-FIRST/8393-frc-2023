@@ -8,6 +8,8 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.utilities.CTREConfigs;
+
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -32,6 +34,11 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
+    //camera1 = CameraServer.startAutomaticCapture(0);
+    //camera2 = CameraServer.startAutomaticCapture(1);
+    //camera1.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
+    //camera2.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
+
   }
 
   /**
@@ -85,6 +92,16 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
+    /* The code commented out below is switching between camera feeds during teleop */
+    /*
+    if (joy1.getTriggerPressed()) {
+      System.out.println("Setting camera 2");
+      cameraSelection.setString(camera2.getName());
+  } else if (joy1.getTriggerReleased()) {
+      System.out.println("Setting camera 1");
+      cameraSelection.setString(camera1.getName());
+  }
+  */
   }
 
   @Override

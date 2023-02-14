@@ -1,7 +1,8 @@
 package frc.robot.autos;
 
 import frc.robot.Constants;
-import frc.robot.subsystems.Swerve;
+import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Drivetrain.DrivetrainConstants;
 
 import java.util.List;
 
@@ -18,14 +19,14 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 
 public class exampleAuto extends SequentialCommandGroup {
-    public exampleAuto(Swerve s_Swerve){
+    public exampleAuto(Drivetrain s_Swerve){
         TrajectoryConfig config =
             new TrajectoryConfig(
                     Constants.AutoConstants.kMaxSpeedMetersPerSecond,
                     Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared)
-                .setKinematics(Constants.Swerve.swerveKinematics);
+                .setKinematics(DrivetrainConstants.swerveKinematics);
 
-        // An example trajectory to follow.  All units in meters.
+        // All units in meters.
         Trajectory exampleTrajectory =
             TrajectoryGenerator.generateTrajectory(
                 // Start at the origin facing the +X direction
@@ -45,7 +46,7 @@ public class exampleAuto extends SequentialCommandGroup {
             new SwerveControllerCommand(
                 exampleTrajectory,
                 s_Swerve::getPose,
-                Constants.Swerve.swerveKinematics,
+                DrivetrainConstants.swerveKinematics,
                 new PIDController(Constants.AutoConstants.kPXController, 0, 0),
                 new PIDController(Constants.AutoConstants.kPYController, 0, 0),
                 thetaController,
