@@ -22,6 +22,8 @@ public class RobotContainer {
     private final int rotationAxis = XboxController.Axis.kRightX.value;
 
     /* Driver Buttons */
+    private final JoystickButton ratchetLock = new JoystickButton(driver, XboxController.Button.kRightStick.value);
+    private final JoystickButton ratchetUnlock = new JoystickButton(driver, XboxController.Button.kLeftStick.value);
     private final JoystickButton liftUp = new JoystickButton(driver, XboxController.Button.kB.value);
     private final JoystickButton liftDown = new JoystickButton(driver, XboxController.Button.kY.value);
     private final JoystickButton liftStop = new JoystickButton(driver, XboxController.Button.kX.value);
@@ -34,6 +36,7 @@ public class RobotContainer {
     private final Swerve s_Swerve = new Swerve();
     private final Grabber grabber = new Grabber();
     private final Lift lift = new Lift();
+    private final Extension extension = new Extension();
 
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -57,6 +60,8 @@ public class RobotContainer {
 
     private void configureButtonBindings() {
         /* Driver Buttons */
+        ratchetLock.onTrue(new InstantCommand(() -> extension.ratchetLock()));
+        ratchetUnlock.onTrue(new InstantCommand(() -> extension.ratchetUnlock()));
         liftUp.onTrue(new InstantCommand(() -> lift.state = Position.UP));
         liftDown.onTrue(new InstantCommand(() -> lift.state = Position.DOWN));
         liftStop.onTrue(new InstantCommand(() -> lift.state = Position.STOP));
